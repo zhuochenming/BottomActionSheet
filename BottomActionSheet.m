@@ -89,7 +89,7 @@ static CGFloat const spaceLine = 0.5;
     CGRect sheetViewF = sheetView.frame;
     
 #pragma mark - add
-    sheetViewF.size.height = BtnHeight * tag + Margin + (_labelText.length>0?labelTextHeight:0);
+    sheetViewF.size.height = BtnHeight * tag + Margin + (_labelText.length > 0 ? labelTextHeight:0);
     sheetView.frame = sheetViewF;
     
     // 取消按钮
@@ -117,7 +117,6 @@ static CGFloat const spaceLine = 0.5;
     newSheetViewF.origin.y = ScreenHeight - self.sheetView.frame.size.height;
     
     [UIView animateWithDuration:0.3 animations:^{
-        
         self.sheetView.frame = newSheetViewF;
         self.actionSheet.alpha = 0.8;
     }];
