@@ -2,18 +2,25 @@
 //  BottomActionSheet.m
 //  BottomActionSheet
 //
-//  Created by 酌晨茗 on 16/2/26.
-//  Copyright © 2016年 酌晨茗. All rights reserved.
+//  Created by Zhuochenming on 16/2/26.
+//  Copyright © 2016年 Zhuochenming. All rights reserved.
 //
 
 #import "BottomActionSheet.h"
 
-// 每个按钮的高度
-#define BtnHeight 45
-#define labelTextHeight 45
+#define ScreenWidth [UIScreen mainScreen].bounds.size.width
+#define ScreenHeight [UIScreen mainScreen].bounds.size.height
 
+// 文本高度
+static CGFloat const TopLabelTextHeight = 45.0;
+// 每个按钮的高度
+static CGFloat const ButtonHeight = 45.0;
+// 线高度
+static CGFloat const SeparateLineWidth = 0.5;
 // 取消按钮上面的间隔高度
-#define Margin 8
+static CGFloat const Margin = 8.0;
+
+
 
 #define RGBColor(r, g, b) [UIColor colorWithRed:(r / 255.0) green:(g / 255.0) blue:(b / 255.0) alpha:1.0]
 // 背景色
@@ -25,16 +32,14 @@
 // 高亮状态下的图片
 #define highImage [self createImageWithColor:RGBColor(242, 242, 242)]
 
-#define ScreenWidth [UIScreen mainScreen].bounds.size.width
-#define ScreenHeight [UIScreen mainScreen].bounds.size.height
+
+
 // 字体
 #define HeitiLight(f) [UIFont fontWithName:@"STHeitiSC-Light" size:f]
 
-static CGFloat const spaceLine = 0.5;
+@interface BottomActionSheet ()
 
-@interface BottomActionSheet () {
-    int tag;
-}
+@property (nonatomic, assign) NSInteger privateTag;
 
 @property (nonatomic, weak) BottomActionSheet *actionSheet;
 
@@ -49,7 +54,7 @@ static CGFloat const spaceLine = 0.5;
 - (instancetype)initWithDelegate:(id<BottomActionSheetDelegate>)delegate
                        labelText:(NSString *)title
                      CancelTitle:(NSString *)cancelTitle
-                     OtherTitles:(NSString *)otherTitles, ...{
+                     OtherTitles:(NSString *)otherTitles, ... {
     
     BottomActionSheet *actionSheet = [self init];
     self.actionSheet = actionSheet;
@@ -71,11 +76,11 @@ static CGFloat const spaceLine = 0.5;
     [[UIApplication sharedApplication].keyWindow addSubview:sheetView];
     self.sheetView = sheetView;
     sheetView.hidden = YES;
-    tag = 1;
+    self.privateTag = 1;
     
     NSString *curStr;
     va_list list;
-    if(otherTitles){
+    if(otherTitles) {
         [self setupBtnWithTitle:otherTitles];
         
         va_start(list, otherTitles);
@@ -89,11 +94,11 @@ static CGFloat const spaceLine = 0.5;
     CGRect sheetViewF = sheetView.frame;
     
 #pragma mark - add
-    sheetViewF.size.height = BtnHeight * tag + Margin + (_labelText.length > 0 ? labelTextHeight:0);
+    sheetViewF.size.height = ButtonHeight * _privateTag + Margin + (_labelText.length > 0 ? TopLabelTextHeight : 0);
     sheetView.frame = sheetViewF;
     
     // 取消按钮
-    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, sheetView.frame.size.height - BtnHeight, ScreenWidth, BtnHeight)];
+    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, sheetView.frame.size.height - ButtonHeight, ScreenWidth, ButtonHeight)];
     [btn setBackgroundImage:normalImage forState:UIControlStateNormal];
     [btn setBackgroundImage:highImage forState:UIControlStateHighlighted];
     [btn setTitle:cancelTitle forState:UIControlStateNormal];
@@ -106,8 +111,7 @@ static CGFloat const spaceLine = 0.5;
     return actionSheet;
 }
 
-- (void)show{
-    
+- (void)show {
     self.sheetView.hidden = NO;
     CGRect sheetViewF = self.sheetView.frame;
     sheetViewF.origin.y = ScreenHeight;
@@ -125,7 +129,7 @@ static CGFloat const spaceLine = 0.5;
 - (void)setupBtnWithTitle:(NSString *)title{
 #pragma mark - add label
     if (_labelText.length > 0) {
-        UILabel *titleLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, labelTextHeight)];
+        UILabel *titleLbl = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, TopLabelTextHeight)];
         titleLbl.text = _labelText;
         titleLbl.textAlignment = NSTextAlignmentCenter;
         titleLbl.font = [UIFont systemFontOfSize:13.0];
@@ -135,17 +139,17 @@ static CGFloat const spaceLine = 0.5;
     }
     
     // 创建按钮
-    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, (_labelText.length > 0 ? labelTextHeight+spaceLine:0) + (BtnHeight + spaceLine) * (tag - 1) , ScreenWidth, BtnHeight)];
+    UIButton *btn = [[UIButton alloc] initWithFrame:CGRectMake(0, (_labelText.length > 0 ? TopLabelTextHeight + SeparateLineWidth : 0) + (ButtonHeight + SeparateLineWidth) * (_privateTag - 1) , ScreenWidth, ButtonHeight)];
     [btn setBackgroundImage:normalImage forState:UIControlStateNormal];
     [btn setBackgroundImage:highImage forState:UIControlStateHighlighted];
     [btn setTitle:title forState:UIControlStateNormal];
     [btn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     btn.titleLabel.font = ScreenWidth > 320 ? HeitiLight(18) : HeitiLight(17);
-    btn.tag = tag;
+    btn.tag = _privateTag;
     [btn addTarget:self action:@selector(sheetBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.sheetView addSubview:btn];
     
-    tag++;
+    _privateTag++;
 }
 
 - (void)coverClick {

@@ -2,18 +2,16 @@
 //  BottomActionSheet.h
 //  BottomActionSheet
 //
-//  Created by 酌晨茗 on 16/2/26.
-//  Copyright © 2016年 酌晨茗. All rights reserved.
+//  Created by Zhuochenming on 16/2/26.
+//  Copyright © 2016年 Zhuochenming. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
 @class BottomActionSheet;
-
 @protocol BottomActionSheetDelegate <NSObject>
 
-@optional
-
+@required
 - (void)actionSheet:(BottomActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex;
 
 @end
